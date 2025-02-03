@@ -16,6 +16,7 @@
 ## Backend
 
 1. Navigate to `/backend/`.
+2. Add the URI to a MongoDB database (ensure that you name the cluster "Bhashini", and it has "Inference\_Pipelines", "Input\_Languages" and "Model\_Zoo" collections in it) in `.env`.
 2. Create a file named `.env.credentials`, and fill it with data of the following format:
 ```dotenv
 # AWS credentials
@@ -45,7 +46,3 @@ APIM_BASIC_TOKEN=
 ---
 
 ---
-
-# A snapshot of the inference page
-
-![XYZ Project Inference Pipeline](XYZ_project_pipeline.png)
