@@ -1,0 +1,104 @@
+services:
+  dependencies:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: final
+    image: dependencies
+
+  redis:
+    image: redis:latest
+    container_name: redis
+
+  main:
+    image: dependencies
+    ports:
+      - "5006:5000"
+    volumes:
+      - .:/app
+#      - /var/run/docker.sock:/var/run/docker.sock # THIS IS FOR deployModel.py ONLY
+    entrypoint: ["python", "app.py"]
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - redis
+      - dependencies
+
+  master_server:
+    image: dependencies
+    volumes:
+      - .:/app
+    ports:
+      - "5001:5001"
+    entrypoint: ["python", "APIs/inferenceMicroservices/masterServer.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    depends_on:
+      - dependencies
+
+  input_router:
+    image: dependencies
+    volumes:
+      - .:/app
+    ports:
+      - "5002:5002"
+    entrypoint: ["python", "APIs/inferenceMicroservices/inputRouter.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    depends_on:
+      - dependencies
+
+  preprocess_router:
+    image: dependencies
+    volumes:
+      - .:/app
+    ports:
+      - "5003:5003"
+    entrypoint: ["python", "APIs/inferenceMicroservices/preprocessRouter.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    depends_on:
+      - dependencies
+
+  model_router:
+    image: dependencies
+    volumes:
+      - .:/app
+    ports:
+      - "5004:5004"
+    entrypoint: ["python", "APIs/inferenceMicroservices/modelRouter.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    depends_on:
+      - dependencies
+
+  pipeline_router:
+    image: dependencies
+    volumes:
+      - .:/app
+    ports:
+      - "5005:5005"
+    entrypoint: ["python", "APIs/inferenceMicroservices/pipelineRouter.py"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - ./.env
+      - ./.env.credentials
+    depends_on:
+      - dependencies
