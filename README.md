@@ -1,4 +1,4 @@
-# Bhashini
+# LoCoML
 
 # Deployment Instructions
 
